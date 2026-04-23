@@ -2,10 +2,12 @@
 
 public class QuantityMeasurementApp {
 
-    // Step 1: Enum for Units
+    // Step 1: Extended Enum
     enum LengthUnit {
         FEET(1.0),
-        INCH(1.0 / 12.0);
+        INCH(1.0 / 12.0),
+        YARDS(3.0),
+        CENTIMETERS(0.393701 / 12.0); // convert cm → inches → feet
 
         private final double toFeetFactor;
 
@@ -18,7 +20,7 @@ public class QuantityMeasurementApp {
         }
     }
 
-    // Step 2: Generic Quantity Class
+    // Generic Quantity Class (same as UC3)
     static class QuantityLength {
         private final double value;
         private final LengthUnit unit;
@@ -31,7 +33,6 @@ public class QuantityMeasurementApp {
             this.unit = unit;
         }
 
-        // Convert to base unit (feet)
         private double toFeet() {
             return unit.toFeet(value);
         }
@@ -39,25 +40,27 @@ public class QuantityMeasurementApp {
         @Override
         public boolean equals(Object obj) {
 
-            // Same reference
             if (this == obj) return true;
 
-            // Null or type check
             if (obj == null || getClass() != obj.getClass()) return false;
 
             QuantityLength other = (QuantityLength) obj;
 
-            // Compare after conversion to feet
             return Double.compare(this.toFeet(), other.toFeet()) == 0;
         }
     }
 
-    // Main method
+    // Main Demo
     public static void main(String[] args) {
 
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.YARDS);
+        QuantityLength q2 = new QuantityLength(3.0, LengthUnit.FEET);
 
-        System.out.println("Are equal? " + q1.equals(q2));
+        System.out.println("Yard to Feet Equal: " + q1.equals(q2));
+
+        QuantityLength q3 = new QuantityLength(1.0, LengthUnit.CENTIMETERS);
+        QuantityLength q4 = new QuantityLength(0.393701, LengthUnit.INCH);
+
+        System.out.println("CM to Inch Equal: " + q3.equals(q4));
     }
 }
