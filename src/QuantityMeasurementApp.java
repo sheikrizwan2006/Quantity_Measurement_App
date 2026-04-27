@@ -1,8 +1,6 @@
-// QuantityMeasurementApp.java
-
 public class QuantityMeasurementApp {
 
-    // Enum (same as UC5)
+    // ENUM
     enum LengthUnit {
         FEET(1.0),
         INCH(1.0 / 12.0),
@@ -24,8 +22,9 @@ public class QuantityMeasurementApp {
         }
     }
 
-    // Quantity Class
+    // QUANTITY CLASS
     static class QuantityLength {
+
         private final double value;
         private final LengthUnit unit;
 
@@ -37,6 +36,7 @@ public class QuantityMeasurementApp {
             this.unit = unit;
         }
 
+        // ✅ REQUIRED GETTERS (YOU MISSED THIS BEFORE)
         public double getValue() {
             return value;
         }
@@ -49,27 +49,31 @@ public class QuantityMeasurementApp {
             return unit.toFeet(value);
         }
 
-        // 🔥 UC6: ADD METHOD (Instance)
+        // UC6 (old)
         public QuantityLength add(QuantityLength other) {
+            double sumFeet = this.toFeet() + other.toFeet();
+            double resultValue = this.unit.fromFeet(sumFeet);
+            return new QuantityLength(resultValue, this.unit);
+        }
+
+        // ✅ UC7 (IMPORTANT)
+        public QuantityLength add(QuantityLength other, LengthUnit targetUnit) {
 
             if (other == null) {
                 throw new IllegalArgumentException("Other quantity cannot be null");
             }
 
-            // Convert both to base (feet)
+            if (targetUnit == null) {
+                throw new IllegalArgumentException("Target unit cannot be null");
+            }
+
             double sumFeet = this.toFeet() + other.toFeet();
+            double resultValue = targetUnit.fromFeet(sumFeet);
 
-            // Convert result back to FIRST operand unit
-            double resultValue = this.unit.fromFeet(sumFeet);
-
-            return new QuantityLength(resultValue, this.unit);
+            return new QuantityLength(resultValue, targetUnit);
         }
 
-        // 🔥 STATIC ADD METHOD (Overloading)
-        public static QuantityLength add(QuantityLength q1, QuantityLength q2) {
-            return q1.add(q2);
-        }
-
+        // equals for unit-safe comparison
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -78,21 +82,5 @@ public class QuantityMeasurementApp {
             QuantityLength other = (QuantityLength) obj;
             return Double.compare(this.toFeet(), other.toFeet()) == 0;
         }
-
-        @Override
-        public String toString() {
-            return value + " " + unit;
-        }
-    }
-
-    // Demo
-    public static void main(String[] args) {
-
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
-
-        QuantityLength result = q1.add(q2);
-
-        System.out.println("Result: " + result); // 2.0 FEET
     }
 }
