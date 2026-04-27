@@ -2,65 +2,47 @@
 
 public class QuantityMeasurementApp {
 
-    // Step 1: Extended Enum
-    enum LengthUnit {
-        FEET(1.0),
-        INCH(1.0 / 12.0),
-        YARDS(3.0),
-        CENTIMETERS(0.393701 / 12.0); // convert cm → inches → feet
-
-        private final double toFeetFactor;
-
-        LengthUnit(double toFeetFactor) {
-            this.toFeetFactor = toFeetFactor;
-        }
-
-        public double toFeet(double value) {
-            return value * toFeetFactor;
-        }
-    }
-
-    // Generic Quantity Class (same as UC3)
-    static class QuantityLength {
+    // Inner Class - Feet
+    static class Feet {
         private final double value;
-        private final LengthUnit unit;
 
-        public QuantityLength(double value, LengthUnit unit) {
-            if (unit == null) {
-                throw new IllegalArgumentException("Unit cannot be null");
-            }
+        public Feet(double value) {
             this.value = value;
-            this.unit = unit;
         }
 
-        private double toFeet() {
-            return unit.toFeet(value);
+        public double getValue() {
+            return value;
         }
 
         @Override
         public boolean equals(Object obj) {
 
-            if (this == obj) return true;
+            // Same reference check
+            if (this == obj) {
+                return true;
+            }
 
-            if (obj == null || getClass() != obj.getClass()) return false;
+            // Null or different type check
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
 
-            QuantityLength other = (QuantityLength) obj;
+            // Type casting
+            Feet other = (Feet) obj;
 
-            return Double.compare(this.toFeet(), other.toFeet()) == 0;
+            // Compare using Double.compare
+            return Double.compare(this.value, other.value) == 0;
         }
     }
 
-    // Main Demo
+    // Main Method
     public static void main(String[] args) {
 
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.YARDS);
-        QuantityLength q2 = new QuantityLength(3.0, LengthUnit.FEET);
+        Feet f1 = new Feet(1.0);
+        Feet f2 = new Feet(1.0);
 
-        System.out.println("Yard to Feet Equal: " + q1.equals(q2));
+        boolean result = f1.equals(f2);
 
-        QuantityLength q3 = new QuantityLength(1.0, LengthUnit.CENTIMETERS);
-        QuantityLength q4 = new QuantityLength(0.393701, LengthUnit.INCH);
-
-        System.out.println("CM to Inch Equal: " + q3.equals(q4));
+        System.out.println("Are equal? " + result);
     }
 }
