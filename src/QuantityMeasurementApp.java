@@ -1,42 +1,42 @@
-public class QuantityMeasurementApp {
+// LengthUnit (TOP LEVEL)
+enum LengthUnit {
+    FEET(1.0),
+    INCH(1.0 / 12.0),
+    YARDS(3.0),
+    CENTIMETERS(1.0 / 30.48);
 
-    // ENUM
-    enum LengthUnit {
-        FEET(1.0),
-        INCH(1.0 / 12.0),
-        YARDS(3.0),
-        CENTIMETERS(0.393701 / 12.0);
+    private final double factor;
 
-        private final double toFeetFactor;
-
-        LengthUnit(double toFeetFactor) {
-            this.toFeetFactor = toFeetFactor;
-        }
-
-        public double toFeet(double value) {
-            return value * toFeetFactor;
-        }
-
-        public double fromFeet(double feetValue) {
-            return feetValue / toFeetFactor;
-        }
+    LengthUnit(double factor) {
+        this.factor = factor;
     }
 
-    // QUANTITY CLASS
+    public double toFeet(double value) {
+        return value * factor;
+    }
+
+    public double fromFeet(double value) {
+        return value / factor;
+    }
+}
+
+
+// MAIN CLASS
+public class QuantityMeasurementApp {
+
     static class QuantityLength {
 
         private final double value;
         private final LengthUnit unit;
 
         public QuantityLength(double value, LengthUnit unit) {
-            if (unit == null) throw new IllegalArgumentException("Unit cannot be null");
-            if (!Double.isFinite(value)) throw new IllegalArgumentException("Invalid value");
+            if (unit == null) throw new IllegalArgumentException();
+            if (!Double.isFinite(value)) throw new IllegalArgumentException();
 
             this.value = value;
             this.unit = unit;
         }
 
-        // ✅ REQUIRED GETTERS (YOU MISSED THIS BEFORE)
         public double getValue() {
             return value;
         }
@@ -49,37 +49,35 @@ public class QuantityMeasurementApp {
             return unit.toFeet(value);
         }
 
-        // UC6 (old)
+        // UC5
+        public QuantityLength convertTo(LengthUnit target) {
+            double base = toFeet();
+            double result = target.fromFeet(base);
+            return new QuantityLength(result, target);
+        }
+
+        // UC6
         public QuantityLength add(QuantityLength other) {
-            double sumFeet = this.toFeet() + other.toFeet();
-            double resultValue = this.unit.fromFeet(sumFeet);
-            return new QuantityLength(resultValue, this.unit);
+            double sum = this.toFeet() + other.toFeet();
+            double result = unit.fromFeet(sum);
+            return new QuantityLength(result, unit);
         }
 
-        // ✅ UC7 (IMPORTANT)
-        public QuantityLength add(QuantityLength other, LengthUnit targetUnit) {
-
-            if (other == null) {
-                throw new IllegalArgumentException("Other quantity cannot be null");
-            }
-
-            if (targetUnit == null) {
-                throw new IllegalArgumentException("Target unit cannot be null");
-            }
-
-            double sumFeet = this.toFeet() + other.toFeet();
-            double resultValue = targetUnit.fromFeet(sumFeet);
-
-            return new QuantityLength(resultValue, targetUnit);
+        // UC7
+        public QuantityLength add(QuantityLength other, LengthUnit target) {
+            double sum = this.toFeet() + other.toFeet();
+            double result = target.fromFeet(sum);
+            return new QuantityLength(result, target);
         }
 
-        // equals for unit-safe comparison
+        // Equality
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
 
             QuantityLength other = (QuantityLength) obj;
+
             return Double.compare(this.toFeet(), other.toFeet()) == 0;
         }
     }
