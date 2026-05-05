@@ -1,45 +1,83 @@
-// QuantityMeasurementAppTest.java
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class QuantityMeasurementAppTest {
 
-    @Test
-    void testEquality_SameValue() {
-        QuantityMeasurementApp.Feet f1 = new QuantityMeasurementApp.Feet(1.0);
-        QuantityMeasurementApp.Feet f2 = new QuantityMeasurementApp.Feet(1.0);
+    private static final double EPS = 1e-2;
 
-        assertTrue(f1.equals(f2));
+    // ---------- LENGTH TESTS ----------
+
+    @Test
+    void testLengthEquality() {
+        var q1 = new QuantityMeasurementApp.Quantity<>(1.0, LengthUnit.FEET);
+        var q2 = new QuantityMeasurementApp.Quantity<>(12.0, LengthUnit.INCH);
+
+        assertTrue(q1.equals(q2));
     }
 
     @Test
-    void testEquality_DifferentValue() {
-        QuantityMeasurementApp.Feet f1 = new QuantityMeasurementApp.Feet(1.0);
-        QuantityMeasurementApp.Feet f2 = new QuantityMeasurementApp.Feet(2.0);
+    void testLengthConversion() {
+        var q = new QuantityMeasurementApp.Quantity<>(1.0, LengthUnit.FEET);
 
-        assertFalse(f1.equals(f2));
+        assertEquals(12.0, q.convertTo(LengthUnit.INCH).getValue(), EPS);
     }
 
     @Test
-    void testEquality_NullComparison() {
-        QuantityMeasurementApp.Feet f1 = new QuantityMeasurementApp.Feet(1.0);
+    void testLengthAddition() {
+        var q1 = new QuantityMeasurementApp.Quantity<>(1.0, LengthUnit.FEET);
+        var q2 = new QuantityMeasurementApp.Quantity<>(12.0, LengthUnit.INCH);
 
-        assertFalse(f1.equals(null));
+        assertEquals(2.0, q1.add(q2).getValue(), EPS);
+    }
+
+    // ---------- WEIGHT TESTS ----------
+
+    @Test
+    void testWeightEquality() {
+        var q1 = new QuantityMeasurementApp.Quantity<>(1.0, WeightUnit.KILOGRAM);
+        var q2 = new QuantityMeasurementApp.Quantity<>(1000.0, WeightUnit.GRAM);
+
+        assertTrue(q1.equals(q2));
     }
 
     @Test
-    void testEquality_NonNumericInput() {
-        QuantityMeasurementApp.Feet f1 = new QuantityMeasurementApp.Feet(1.0);
-        String nonNumeric = "Not a number";
+    void testWeightConversion() {
+        var q = new QuantityMeasurementApp.Quantity<>(1.0, WeightUnit.KILOGRAM);
 
-        assertFalse(f1.equals(nonNumeric));
+        assertEquals(1000.0, q.convertTo(WeightUnit.GRAM).getValue(), EPS);
     }
 
     @Test
-    void testEquality_SameReference() {
-        QuantityMeasurementApp.Feet f1 = new QuantityMeasurementApp.Feet(1.0);
+    void testWeightAddition() {
+        var q1 = new QuantityMeasurementApp.Quantity<>(1.0, WeightUnit.KILOGRAM);
+        var q2 = new QuantityMeasurementApp.Quantity<>(1000.0, WeightUnit.GRAM);
 
-        assertTrue(f1.equals(f1));
+        assertEquals(2.0, q1.add(q2).getValue(), EPS);
+    }
+
+    // ---------- CROSS CATEGORY ----------
+
+    @Test
+    void testCrossCategoryComparison() {
+        var length = new QuantityMeasurementApp.Quantity<>(1.0, LengthUnit.FEET);
+        var weight = new QuantityMeasurementApp.Quantity<>(1.0, WeightUnit.KILOGRAM);
+
+        assertFalse(length.equals(weight));
+    }
+
+    // ---------- EDGE CASES ----------
+
+    @Test
+    void testNullUnit() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new QuantityMeasurementApp.Quantity<>(1.0, null);
+        });
+    }
+
+    @Test
+    void testInvalidValue() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new QuantityMeasurementApp.Quantity<>(Double.NaN, LengthUnit.FEET);
+        });
     }
 }
